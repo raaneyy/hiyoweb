@@ -39,13 +39,13 @@
                     @click="activeTab = 'reader'"
                     :class="activeTab === 'reader' ? 'bg-white text-stone-900 shadow-2xs font-semibold' : 'text-stone-600 hover:text-stone-900'"
                     class="px-3 py-1.5 rounded-md transition-all">
-                📖 Pembaca Diary
+                📖 Reader
             </button>
             <button type="button" 
                     @click="activeTab = 'admin'"
                     :class="activeTab === 'admin' ? 'bg-white text-stone-900 shadow-2xs font-semibold' : 'text-stone-600 hover:text-stone-900'"
                     class="px-3 py-1.5 rounded-md transition-all">
-                🔐 Login Admin
+                🔐 Make a Diary
             </button>
         </div>
     </header>
@@ -96,7 +96,7 @@
                                     Verifikasi
                                 </h1>
                                 <p class="text-[11px] sm:text-xs font-semibold uppercase tracking-widest text-stone-500 mt-3 max-w-xl mx-auto leading-relaxed">
-                                    MASUKKAN TANGGAL PERTAMA KALI KAMU CHAT AKU (KALAU GA TAU, GAUSAH BUKA WHAHAHA)
+                                    MASUKKAN TANGGAL KITA PACARAN (KALAU GA TAU, GAUSAH BUKA WHAHAHA)
                                 </p>
                             </div>
 

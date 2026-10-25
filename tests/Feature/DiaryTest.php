@@ -34,9 +34,9 @@ class DiaryTest extends TestCase
         $diary = Diary::create(['title' => 'Test Diary']);
 
         $response = $this->post(route('login.reader'), [
-            'hari' => 14,
+            'hari' => 18,
             'bulan' => 3,
-            'tahun' => 2023,
+            'tahun' => 2026,
         ]);
 
         $response->assertRedirect(route('diary.show', $diary->id));
@@ -130,6 +130,39 @@ class DiaryTest extends TestCase
         $this->assertDatabaseHas('page_items', [
             'position' => 1,
             'caption' => 'Love u moree, sayangg.',
+        ]);
+    }
+
+    public function test_can_create_page_with_auto_page_number(): void
+    {
+        $diary = Diary::create(['title' => 'Test Diary']);
+
+        // First page auto assigned to 1
+        $this->withSession(['is_admin' => true])
+            ->post(route('admin.pages.store'), [
+                'diary_id' => $diary->id,
+                'layout_type' => 'text_only',
+                'note_title' => 'Page 1',
+            ]);
+
+        $this->assertDatabaseHas('pages', [
+            'diary_id' => $diary->id,
+            'page_number' => 1,
+            'note_title' => 'Page 1',
+        ]);
+
+        // Second page auto assigned to 2
+        $this->withSession(['is_admin' => true])
+            ->post(route('admin.pages.store'), [
+                'diary_id' => $diary->id,
+                'layout_type' => 'text_only',
+                'note_title' => 'Page 2',
+            ]);
+
+        $this->assertDatabaseHas('pages', [
+            'diary_id' => $diary->id,
+            'page_number' => 2,
+            'note_title' => 'Page 2',
         ]);
     }
 }

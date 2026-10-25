@@ -32,20 +32,7 @@
     <form action="{{ route('admin.pages.store') }}" method="POST" enctype="multipart/form-data" class="bg-white border border-[#E5DAC6] rounded-xl p-6 sm:p-8 shadow-xs space-y-6">
         @csrf
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-            <!-- Page Number -->
-            <div>
-                <label for="page_number" class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-2">
-                    Nomor Halaman <span class="text-rose-500">*</span>
-                </label>
-                <input type="number" name="page_number" id="page_number" min="1" value="{{ old('page_number', $suggestedPageNum) }}" required 
-                       class="w-full bg-[#FAF7F2] border border-[#E0D5C1] rounded-lg px-3.5 py-2.5 text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-stone-400">
-                <span class="text-[11px] text-stone-400 mt-1 block">Gunakan angka ganjil untuk halaman kiri, genap untuk halaman kanan.</span>
-            </div>
-        </div>
-
-        <hr class="border-[#F0E6D6]">
+        <input type="hidden" name="diary_id" value="{{ $selectedDiaryId }}">
 
         <!-- Audio & Song Section -->
         <div class="bg-[#FAF7F2] border border-[#ECE2D0] rounded-lg p-4 space-y-4">
@@ -75,18 +62,14 @@
             </label>
             <select name="layout_type" id="layout_type" x-model="layout" required 
                     class="w-full bg-[#F4EFE6] border border-[#D9CEB9] font-medium rounded-lg px-4 py-3 text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-stone-500 shadow-2xs">
-                <option value="text_only">📝 text_only (Judul & Catatan / Lirik Lagu)</option>
-                <option value="full_media">🖼️ full_media (1 Media Video/Foto Fullscreen + Caption)</option>
-                <option value="photo_album_4">📸 photo_album_4 (Grid 2x2 Untuk 4 Foto + Caption)</option>
+                <option value="text_only">📝 Text</option>
+                <option value="full_media">🖼️ Video</option>
+                <option value="photo_album_4">📸 Photo Album</option>
             </select>
         </div>
 
         <!-- DYNAMIC SECTION 1: LAYOUT 'text_only' -->
         <div x-show="layout === 'text_only'" x-transition class="space-y-4 bg-[#FFFDF9] border border-[#E8DFC8] p-5 rounded-lg">
-            <div class="flex items-center gap-2 mb-2">
-                <span class="bg-amber-100 text-amber-800 text-xs px-2 py-0.5 rounded font-semibold uppercase tracking-wider">Layout Text Only</span>
-                <span class="text-xs text-stone-500">Tampilan ala catatan/lirik buku harian.</span>
-            </div>
 
             <div>
                 <label for="note_title" class="block text-xs font-semibold text-stone-700 mb-1">Judul Notes / Catatan (opsional)</label>
@@ -98,7 +81,6 @@
                 <label for="note_content" class="block text-xs font-semibold text-stone-700 mb-1">Isi Teks Catatan / Lirik Lagu / Notes</label>
                 <textarea name="note_content" id="note_content" rows="10" placeholder="Tuliskan lirik lagu, pesan, atau cerita catatan harian Anda di sini..."
                           class="w-full bg-[#FAF7F2] border border-[#E0D5C1] rounded-md p-3.5 text-sm font-serif-diary italic text-stone-800 leading-relaxed focus:outline-none focus:ring-1 focus:ring-stone-400 whitespace-pre-line">{{ old('note_content') }}</textarea>
-                <span class="text-[11px] text-stone-400 mt-1 block">Format baris baru (Enter) akan dijaga sesuai tulisan Anda.</span>
             </div>
         </div>
 

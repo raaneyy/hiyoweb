@@ -38,7 +38,8 @@ class AuthController extends Controller
         $bulan = (int) $request->bulan;
         $tahun = (int) $request->tahun;
 
-        $isValidDate = ($hari === 6 && $bulan === 3 && $tahun === 2026);
+        $isValidDate = ($hari === 18 && $bulan === 3 && $tahun === 2026)
+            || ($hari === 18 && $bulan === 03 && $tahun === 2026);
 
         if ($isValidDate) {
             session(['is_reader_verified' => true]);

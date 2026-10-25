@@ -45,8 +45,8 @@ class PageController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'diary_id' => 'required|exists:diaries,id',
-            'page_number' => 'required|integer|min:1',
+            'diary_id' => 'nullable|exists:diaries,id',
+            'page_number' => 'nullable|integer|min:1',
             'song_title' => 'nullable|string|max:255',
             'audio_file' => 'nullable|file|mimes:mp3,wav,m4a,ogg,aac|max:20480',
             'layout_type' => 'required|in:full_media,photo_album_4,text_only',
@@ -54,13 +54,28 @@ class PageController extends Controller
             'note_content' => 'nullable|string',
         ]);
 
-        // Check if page_number already exists for this diary
-        $existingPage = Page::where('diary_id', $validated['diary_id'])
-            ->where('page_number', $validated['page_number'])
+        $diaryId = $validated['diary_id'] ?? Diary::first()?->id;
+
+        if (! $diaryId) {
+            $diary = Diary::create([
+                'title' => 'My Journal',
+                'description' => 'A cozy digital flipbook notebook for memories and notes.',
+                'cover_color' => '#2D2824',
+            ]);
+            $diaryId = $diary->id;
+        }
+
+        $pageNumber = ! empty($validated['page_number'])
+            ? (int) $validated['page_number']
+            : ((Page::where('diary_id', $diaryId)->max('page_number') ?? 0) + 1);
+
+        // Check if page_number already exists for this diary and auto bump if needed
+        $existingPage = Page::where('diary_id', $diaryId)
+            ->where('page_number', $pageNumber)
             ->first();
 
         if ($existingPage) {
-            return back()->withInput()->withErrors(['page_number' => 'Halaman nomor '.$validated['page_number'].' sudah ada di diary ini.']);
+            $pageNumber = (Page::where('diary_id', $diaryId)->max('page_number') ?? 0) + 1;
         }
 
         $audioPath = null;
@@ -69,8 +84,8 @@ class PageController extends Controller
         }
 
         $page = Page::create([
-            'diary_id' => $validated['diary_id'],
-            'page_number' => $validated['page_number'],
+            'diary_id' => $diaryId,
+            'page_number' => $pageNumber,
             'song_title' => $validated['song_title'] ?? null,
             'audio_file' => $audioPath,
             'layout_type' => $validated['layout_type'],
