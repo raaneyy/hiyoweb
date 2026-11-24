@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-[#FDF9F1]">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifikasi Keamanan - Digital Diary</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+</head>
+<body class="min-h-screen bg-[#FDF9F1] flex flex-col items-center justify-between p-4 sm:p-8 selection:bg-[#EADBCE]">
+
+    <!-- Top Navigation -->
+    <header class="w-full max-w-4xl flex items-center justify-between py-2">
+        <a href="index.html" class="text-xs text-stone-500 hover:text-stone-800 uppercase tracking-widest font-semibold flex items-center gap-1">
+            &larr; Kembali ke Landing Page
+        </a>
+
+        <!-- Tab Switcher (Pembaca vs Admin) -->
+        <div class="bg-[#EBE3D3] p-1 rounded-lg flex items-center gap-1 text-xs">
+            <button type="button" id="tab-reader-btn"
+                    onclick="switchTab('reader')"
+                    class="px-3 py-1.5 rounded-md transition-all bg-white text-stone-900 shadow-2xs font-semibold">
+                📖 Reader
+            </button>
+            <button type="button" id="tab-admin-btn"
+                    onclick="switchTab('admin')"
+                    class="px-3 py-1.5 rounded-md transition-all text-stone-600 hover:text-stone-900">
+                🔐 Make a Diary
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN BINDER NOTEBOOK CARD CONTAINER -->
+    <div class="my-auto w-full max-w-4xl px-2">
+        
+        <!-- Flash Alert Messages -->
+        <div id="alert-error" class="hidden mb-4 bg-rose-50 border border-rose-200 text-rose-800 px-4 py-3 rounded-lg text-sm flex items-center justify-between shadow-2xs">
+            <span id="alert-error-text"></span>
+            <button type="button" onclick="document.getElementById('alert-error').classList.add('hidden')" class="text-rose-600 font-bold">&times;</button>
+        </div>
+
+        <!-- Outer Frame -->
+        <div class="bg-[#EBE3D3]/60 p-3 sm:p-6 rounded-2xl border border-[#DFD6C4] shadow-lg">
+            
+            <!-- BINDER CARD DESIGN -->
+            <div class="bg-[#FFFDF9] rounded-xl overflow-hidden border border-[#E5DAC6] shadow-sm flex flex-col md:flex-row relative min-h-[460px]">
+                
+                <!-- Left Black Spine Binder Strip -->
+                <div class="w-12 md:w-16 bg-[#231F20] flex flex-row md:flex-col items-center justify-around py-4 md:py-8 shrink-0 z-10 shadow-inner">
+                    <div class="w-3 h-3 rounded-full bg-[#141213] border border-stone-700 shadow-xs"></div>
+                    <div class="w-3 h-3 rounded-full bg-[#141213] border border-stone-700 shadow-xs"></div>
+                    <div class="w-3 h-3 rounded-full bg-[#141213] border border-stone-700 shadow-xs"></div>
+                    <div class="w-3 h-3 rounded-full bg-[#141213] border border-stone-700 shadow-xs"></div>
+                    <div class="w-3 h-3 rounded-full bg-[#141213] border border-stone-700 shadow-xs"></div>
+                    <div class="w-3 h-3 rounded-full bg-[#141213] border border-stone-700 shadow-xs"></div>
+                </div>
+
+                <!-- Main Inner Content Area -->
+                <div class="flex-grow p-6 sm:p-10 md:p-12 flex flex-col justify-between bg-[#FFFDF9]">
+
+                    <!-- TAB 1: PEMBACA DIARY (VERIFIKASI TANGGAL) -->
+                    <div id="section-reader" class="flex flex-col justify-between flex-grow">
+                        <div>
+                            <!-- Header Title -->
+                            <div class="text-center mb-6 sm:mb-8">
+                                <h1 class="font-serif-diary italic text-3xl sm:text-4xl text-stone-900 font-medium tracking-wide">
+                                    Verifikasi
+                                </h1>
+                                <p class="text-[11px] sm:text-xs font-semibold uppercase tracking-widest text-stone-500 mt-3 max-w-xl mx-auto leading-relaxed">
+                                    MASUKKAN TANGGAL KITA PACARAN (KALAU GA TAU, GAUSAH BUKA WHAHAHA)
+                                </p>
+                            </div>
+
+                            <!-- Verification Form -->
+                            <form id="form-reader" onsubmit="handleReaderSubmit(event)" class="space-y-6 max-w-2xl mx-auto">
+                                <!-- 3 Inputs (HARI, BULAN, TAHUN) -->
+                                <div class="grid grid-cols-3 gap-3 sm:gap-6 bg-[#F3EFE6] p-4 sm:p-6 rounded-lg border border-[#E7DEC8]">
+                                    
+                                    <!-- HARI -->
+                                    <div class="bg-white rounded-md p-3 sm:p-4 border border-[#ECE3D2] shadow-2xs text-left">
+                                        <label for="hari" class="block text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-stone-400">
+                                            HARI
+                                        </label>
+                                        <input type="number" name="hari" id="hari" min="1" max="31" placeholder="18" required
+                                               class="w-full text-center font-serif-diary italic text-stone-800 text-xl sm:text-3xl font-medium focus:outline-none bg-transparent mt-1">
+                                    </div>
+
+                                    <!-- BULAN -->
+                                    <div class="bg-white rounded-md p-3 sm:p-4 border border-[#ECE3D2] shadow-2xs text-left">
+                                        <label for="bulan" class="block text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-stone-400">
+                                            BULAN
+                                        </label>
+                                        <input type="number" name="bulan" id="bulan" min="1" max="12" placeholder="03" required
+                                               class="w-full text-center font-serif-diary italic text-stone-800 text-xl sm:text-3xl font-medium focus:outline-none bg-transparent mt-1">
+                                    </div>
+
+                                    <!-- TAHUN -->
+                                    <div class="bg-white rounded-md p-3 sm:p-4 border border-[#ECE3D2] shadow-2xs text-left">
+                                        <label for="tahun" class="block text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-stone-400">
+                                            TAHUN
+                                        </label>
+                                        <input type="number" name="tahun" id="tahun" placeholder="2026" required
+                                               class="w-full text-center font-serif-diary italic text-stone-800 text-xl sm:text-3xl font-medium focus:outline-none bg-transparent mt-1">
+                                    </div>
+
+                                </div>
+
+                                <!-- CLUE BOX -->
+                                <div class="bg-[#EBE5D9] rounded-md p-4 flex items-center gap-3 text-stone-700 font-serif-diary italic text-sm sm:text-base border border-[#DECDBB]">
+                                    <svg class="w-5 h-5 text-rose-800 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                                    </svg>
+                                    <span id="clue-text" class="tracking-wide uppercase font-medium">CLUE : AWAL MARET</span>
+                                </div>
+
+                                <!-- VERIFIKASI BUTTON -->
+                                <div>
+                                    <button type="submit" 
+                                            class="w-full bg-stone-950 hover:bg-black text-white font-sans font-semibold text-xs sm:text-sm uppercase tracking-[0.2em] py-4 rounded-md shadow-sm transition-all active:scale-[0.99]">
+                                        VERIFIKASI &rarr;
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: ADMIN LOGIN -->
+                    <div id="section-admin" class="hidden flex flex-col justify-between flex-grow">
+                        <div>
+                            <!-- Header Title -->
+                            <div class="text-center mb-6 sm:mb-8">
+                                <h1 class="font-serif-diary italic text-3xl sm:text-4xl text-stone-900 font-medium tracking-wide">
+                                    Akses Admin
+                                </h1>
+                                <p class="text-[11px] sm:text-xs font-semibold uppercase tracking-widest text-stone-500 mt-3 max-w-xl mx-auto">
+                                    MASUKKAN PASSWORD
+                                </p>
+                            </div>
+
+                            <!-- Admin Form -->
+                            <form id="form-admin" onsubmit="handleAdminSubmit(event)" class="space-y-6 max-w-md mx-auto">
+                                <div class="bg-[#F3EFE6] p-6 rounded-lg border border-[#E7DEC8] space-y-4">
+                                    <label for="admin_password" class="block text-xs font-semibold uppercase tracking-wider text-stone-600">
+                                        Password Admin
+                                    </label>
+                                    <input type="password" id="admin_password" placeholder="Masukkan password admin..." required
+                                           class="w-full bg-white border border-[#ECE3D2] rounded-md px-4 py-3 text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-stone-400 shadow-2xs font-sans">
+                                </div>
+
+                                <div>
+                                    <button type="submit" 
+                                            class="w-full bg-stone-950 hover:bg-black text-white font-sans font-semibold text-xs sm:text-sm uppercase tracking-[0.2em] py-4 rounded-md shadow-sm transition-all active:scale-[0.99]">
+                                        MASUK ADMIN &rarr;
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/app.js"></script>
+    <script>
+        // Set dynamic clue from settings
+        const settings = DiaryStore.getSettings();
+        document.getElementById('clue-text').innerText = 'CLUE : ' + (settings.reader_clue || 'AWAL MARET');
+
+        // Check query param for tab
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('tab') === 'admin') {
+            switchTab('admin');
+        }
+
+        function switchTab(tab) {
+            const readerBtn = document.getElementById('tab-reader-btn');
+            const adminBtn = document.getElementById('tab-admin-btn');
+            const readerSection = document.getElementById('section-reader');
+            const adminSection = document.getElementById('section-admin');
+            const alertError = document.getElementById('alert-error');
+
+            alertError.classList.add('hidden');
+
+            if (tab === 'reader') {
+                readerBtn.className = 'px-3 py-1.5 rounded-md transition-all bg-white text-stone-900 shadow-2xs font-semibold';
+                adminBtn.className = 'px-3 py-1.5 rounded-md transition-all text-stone-600 hover:text-stone-900';
+                readerSection.classList.remove('hidden');
+                adminSection.classList.add('hidden');
+            } else {
+                adminBtn.className = 'px-3 py-1.5 rounded-md transition-all bg-white text-stone-900 shadow-2xs font-semibold';
+                readerBtn.className = 'px-3 py-1.5 rounded-md transition-all text-stone-600 hover:text-stone-900';
+                adminSection.classList.remove('hidden');
+                readerSection.classList.add('hidden');
+            }
+        }
+
+        function showError(message) {
+            const alert = document.getElementById('alert-error');
+            const text = document.getElementById('alert-error-text');
+            text.innerText = message;
+            alert.classList.remove('hidden');
+        }
+
+        function handleReaderSubmit(e) {
+            e.preventDefault();
+            const day = document.getElementById('hari').value;
+            const month = document.getElementById('bulan').value;
+            const year = document.getElementById('tahun').value;
+
+            const res = DiaryStore.verifyReader(day, month, year);
+            if (res.success) {
+                window.location.href = 'diary.html';
+            } else {
+                showError(res.message);
+            }
+        }
+
+        function handleAdminSubmit(e) {
+            e.preventDefault();
+            const password = document.getElementById('admin_password').value;
+
+            const res = DiaryStore.verifyAdmin(password);
+            if (res.success) {
+                window.location.href = 'admin.html';
+            } else {
+                showError(res.message);
+            }
+        }
+    </script>
+</body>
+</html>

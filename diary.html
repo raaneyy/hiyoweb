@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-[#F8F5EE]">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Piece of Us - Digital Diary</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+</head>
+<body class="min-h-full font-sans antialiased text-stone-800 bg-[#F8F5EE] selection:bg-[#EADBCE] flex flex-col justify-between">
+
+    <!-- Top Admin / Reader Navigation -->
+    <header class="w-full bg-[#F4EFE6]/80 backdrop-blur-md border-b border-[#E7DEC8] px-6 py-3 sticky top-0 z-50 flex items-center justify-between shadow-xs">
+        <div class="flex items-center gap-3">
+            <a href="diary.html" class="flex items-center gap-2 text-stone-700 hover:text-stone-900 transition-colors">
+                <svg class="w-6 h-6 text-stone-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                </svg>
+                <span class="font-serif-diary font-semibold italic text-xl tracking-wide text-stone-800">MyNote</span>
+            </a>
+        </div>
+
+        <nav id="header-nav" class="flex items-center gap-4 text-xs font-medium uppercase tracking-wider text-stone-600">
+            <!-- Populated via JavaScript depending on auth role -->
+        </nav>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow py-6 sm:py-8">
+        <div class="max-w-6xl mx-auto px-2 sm:px-4">
+
+            <!-- Diary Header / Title -->
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 px-2">
+                <div class="flex items-center gap-3">
+                    <h1 id="diary-page-title" class="font-serif-diary italic text-2xl md:text-3xl text-stone-800 font-medium">
+                        A Piece of Us
+                    </h1>
+                </div>
+                
+                <!-- Quick Page Selector -->
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-stone-500 font-medium">Halaman:</span>
+                    <select id="spread-selector" onchange="goToSpread(this.value)" class="text-xs bg-white border border-[#E7DEC8] rounded-md px-2.5 py-1 text-stone-700 focus:outline-none focus:ring-1 focus:ring-stone-400">
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+            </div>
+
+            <!-- PHYSICAL BOOK SPREAD WRAPPER (DOUBLE PAGE LAYOUT) -->
+            <div class="relative bg-[#F9F6F0] p-3 sm:p-6 rounded-2xl border border-[#E8DFC8] book-container-shadow transition-all duration-300">
+                
+                <!-- Book Outer Container (2 Pages Side-by-Side) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-0 bg-[#FFFDF9] rounded-xl overflow-hidden border border-[#E5DAC6] relative min-h-[580px] md:min-h-[680px]">
+                    
+                    <!-- CENTRAL BOOK SPINE GUTTER SHADOW -->
+                    <div class="hidden md:block absolute top-0 bottom-0 left-1/2 -ml-3 w-6 z-30 pointer-events-none book-spine-shadow opacity-90"></div>
+
+                    <!-- ================= LEFT PAGE ================= -->
+                    <div class="p-6 sm:p-8 flex flex-col justify-between border-b md:border-b-0 md:border-r border-[#EBE1D0] left-page-shadow relative bg-[#FFFDF9] min-h-[560px]">
+                        
+                        <!-- Left Page Header -->
+                        <div class="flex items-center justify-between mb-4">
+                            <span id="left-prev-btn" class="text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-stone-400 font-sans">
+                                <!-- Previous Button -->
+                            </span>
+                            <span id="left-page-header-num" class="text-[10px] font-mono text-stone-300">HLM 1</span>
+                        </div>
+
+                        <!-- Left Page Main Content -->
+                        <div id="left-page-content" class="flex-grow flex flex-col justify-start">
+                            <!-- Populated by JS -->
+                        </div>
+
+                        <!-- Left Page Footer -->
+                        <div class="mt-4 pt-2 border-t border-[#F2EBDE] flex justify-between items-center text-[10px] text-stone-400 font-mono">
+                            <span class="diary-footer-title">A Piece of Us</span>
+                            <span id="left-page-footer-num">1</span>
+                        </div>
+                    </div>
+
+                    <!-- ================= RIGHT PAGE ================= -->
+                    <div class="p-6 sm:p-8 flex flex-col justify-between right-page-shadow relative bg-[#FFFDF9] min-h-[560px]">
+                        
+                        <!-- Right Page Header -->
+                        <div class="flex items-center justify-between mb-4">
+                            <span id="right-page-header-num" class="text-[10px] font-mono text-stone-300">HLM 2</span>
+                            <span id="right-next-btn" class="text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-stone-400 font-sans">
+                                <!-- Next Button -->
+                            </span>
+                        </div>
+
+                        <!-- Right Page Main Content -->
+                        <div id="right-page-content" class="flex-grow flex flex-col justify-start">
+                            <!-- Populated by JS -->
+                        </div>
+
+                        <!-- Right Page Footer -->
+                        <div class="mt-4 pt-2 border-t border-[#F2EBDE] flex justify-between items-center text-[10px] text-stone-400 font-mono">
+                            <span id="right-page-footer-num">2</span>
+                            <span class="diary-footer-title">A Piece of Us</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Bottom Floating Spread Navigation Controls -->
+            <div class="flex items-center justify-center gap-4 mt-6">
+                <button type="button" id="btn-prev-spread" onclick="changeSpread(-1)" 
+                        class="px-4 py-2 rounded-lg bg-white border border-[#E0D5C1] text-xs font-semibold text-stone-700 hover:bg-stone-50 transition-all shadow-2xs flex items-center gap-1.5">
+                    &larr; Halaman Sebelumnya
+                </button>
+                <span id="spread-indicator" class="text-xs text-stone-500 font-mono">
+                    Halaman 1 - 2
+                </span>
+                <button type="button" id="btn-next-spread" onclick="changeSpread(1)" 
+                        class="px-4 py-2 rounded-lg bg-white border border-[#E0D5C1] text-xs font-semibold text-stone-700 hover:bg-stone-50 transition-all shadow-2xs flex items-center gap-1.5">
+                    Halaman Selanjutnya &rarr;
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-4 text-center text-xs text-stone-400 font-serif-diary italic">
+        Digital Notebook &mdash; Forever and Always
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/app.js"></script>
+    <script>
+        // Check Authentication
+        const auth = DiaryStore.getAuth();
+        if (!auth.isReader && !auth.isAdmin) {
+            window.location.href = 'login.html';
+        }
+
+        // Render Navbar
+        const nav = document.getElementById('header-nav');
+        if (auth.isAdmin) {
+            nav.innerHTML = `
+                <a href="admin.html" class="px-3 py-1.5 rounded-md hover:bg-[#EADBCE]/50 transition-colors">
+                    📁 Edit Halaman
+                </a>
+                <a href="admin.html?action=create" class="px-3.5 py-1.5 rounded-md bg-stone-800 text-stone-100 hover:bg-stone-900 transition-all shadow-xs flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Tambah Halaman
+                </a>
+                <button type="button" onclick="DiaryStore.logout()" class="px-3 py-1.5 text-stone-500 hover:text-rose-700 font-medium transition-colors">
+                    Logout
+                </button>
+            `;
+        } else {
+            nav.innerHTML = `
+                <button type="button" onclick="DiaryStore.logout()" class="px-3 py-1.5 text-stone-500 hover:text-rose-700 font-medium transition-colors">
+                    Logout
+                </button>
+            `;
+        }
+
+        // Title sync
+        const settings = DiaryStore.getSettings();
+        document.getElementById('diary-page-title').innerText = settings.diary_title || 'A Piece of Us';
+        document.querySelectorAll('.diary-footer-title').forEach(el => el.innerText = settings.diary_title || 'A Piece of Us');
+
+        // Spreads calculation
+        const pages = DiaryStore.getPages();
+        const maxPageNum = pages.length > 0 ? Math.max(...pages.map(p => p.page_number)) : 2;
+        const normalizedMax = maxPageNum % 2 !== 0 ? maxPageNum + 1 : maxPageNum;
+        const totalSpreads = Math.max(1, Math.ceil(normalizedMax / 2));
+
+        // Get initial spread from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        let currentSpread = 1;
+        if (urlParams.get('spread')) {
+            currentSpread = parseInt(urlParams.get('spread'));
+        } else if (urlParams.get('page')) {
+            currentSpread = Math.ceil(parseInt(urlParams.get('page')) / 2);
+        }
+        if (isNaN(currentSpread) || currentSpread < 1) currentSpread = 1;
+        if (currentSpread > totalSpreads) currentSpread = totalSpreads;
+
+        // Spread dropdown options
+        const spreadSelector = document.getElementById('spread-selector');
+        spreadSelector.innerHTML = '';
+        for (let s = 1; s <= totalSpreads; s++) {
+            const l = (s * 2) - 1;
+            const r = s * 2;
+            const opt = document.createElement('option');
+            opt.value = s;
+            opt.innerText = `Halaman ${l} - ${r}`;
+            if (s === currentSpread) opt.selected = true;
+            spreadSelector.appendChild(opt);
+        }
+
+        // Active Audio Controller
+        let currentAudio = null;
+        function toggleAudio(audioId) {
+            const audioEl = document.getElementById(audioId);
+            if (!audioEl) return;
+
+            if (currentAudio && currentAudio !== audioEl) {
+                currentAudio.pause();
+                updatePlayIcons();
+            }
+
+            if (audioEl.paused) {
+                audioEl.play().catch(e => console.log('Audio autoplay blocked'));
+                currentAudio = audioEl;
+            } else {
+                audioEl.pause();
+                currentAudio = null;
+            }
+            updatePlayIcons();
+        }
+
+        function updatePlayIcons() {
+            document.querySelectorAll('.audio-play-icon').forEach(icon => {
+                const targetId = icon.getAttribute('data-audio-id');
+                const target = document.getElementById(targetId);
+                if (target && !target.paused) {
+                    icon.innerHTML = `<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
+                } else {
+                    icon.innerHTML = `<svg class="w-3.5 h-3.5 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
+                }
+            });
+        }
+
+        // Render Page Content
+        function renderPageContent(pageNum) {
+            const page = DiaryStore.getPage(pageNum);
+            if (!page) {
+                return `
+                    <div class="flex-grow flex flex-col items-center justify-center text-center p-8 text-stone-300">
+                        <svg class="w-12 h-12 mb-3 stroke-[1.2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                        </svg>
+                        <p class="font-serif-diary italic text-stone-400 text-lg mb-2">Halaman ${pageNum} Belum Diisi</p>
+                        ${auth.isAdmin ? `
+                            <a href="admin.html?action=create&page_number=${pageNum}" class="text-xs text-stone-500 hover:text-stone-800 underline font-sans uppercase tracking-wider">
+                                + Isi Halaman Ini
+                            </a>
+                        ` : ''}
+                    </div>
+                `;
+            }
+
+            let audioBarHtml = '';
+            if (page.song_title || page.audio_file) {
+                const audioId = `audio_page_${page.page_number}`;
+                audioBarHtml = `
+                    <div class="bg-[#F5F0E6] rounded-lg px-4 py-2.5 flex items-center justify-between border border-[#ECE5D8] mb-5 shadow-2xs">
+                        <div class="flex items-center gap-2 text-stone-800 font-medium text-xs sm:text-sm tracking-tight truncate">
+                            <span class="text-rose-800 text-base">♪</span>
+                            <span class="truncate font-sans font-medium">${page.song_title || 'Background Track'}</span>
+                        </div>
+                        ${page.audio_file ? `
+                            <audio id="${audioId}" src="${page.audio_file}" preload="none" onended="updatePlayIcons()"></audio>
+                            <button type="button" onclick="toggleAudio('${audioId}')"
+                                    class="w-7 h-7 rounded-full bg-stone-900 text-white flex items-center justify-center hover:bg-stone-800 active:scale-95 transition-all shadow-2xs shrink-0 audio-play-icon"
+                                    data-audio-id="${audioId}">
+                                <svg class="w-3.5 h-3.5 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </button>
+                        ` : `
+                            <div class="w-7 h-7 rounded-full bg-stone-900 text-white flex items-center justify-center shrink-0">
+                                <svg class="w-3.5 h-3.5 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </div>
+                        `}
+                    </div>
+                `;
+            }
+
+            let bodyHtml = '';
+            if (page.layout_type === 'text_only') {
+                bodyHtml = `
+                    <div class="flex flex-col items-center justify-center my-auto py-2">
+                        ${page.note_title ? `
+                            <h2 class="font-serif-diary italic uppercase tracking-[0.25em] text-stone-700 text-center font-medium text-base sm:text-lg mb-4 sm:mb-6">
+                                ${page.note_title}
+                            </h2>
+                        ` : ''}
+                        ${page.note_content ? `
+                            <div class="bg-[#F7F3E9] p-6 sm:p-8 rounded-sm border border-[#ECE5D8] w-full text-center font-serif-diary italic text-stone-700 text-sm sm:text-base leading-relaxed tracking-wide shadow-2xs whitespace-pre-line">
+${page.note_content}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            } else if (page.layout_type === 'full_media') {
+                const item = (page.items && page.items[0]) || null;
+                if (item && item.file_path) {
+                    const isVideo = item.media_type === 'video' || item.file_path.endsWith('.mp4') || item.file_path.endsWith('.webm');
+                    bodyHtml = `
+                        <div class="flex flex-col items-center justify-center my-auto w-full">
+                            <div class="w-full bg-[#F4EFE6] p-1.5 rounded-sm border border-[#ECE5D8] shadow-2xs">
+                                ${isVideo ? `
+                                    <video controls class="w-full max-h-[420px] object-cover rounded-2xs bg-black">
+                                        <source src="${item.file_path}">
+                                    </video>
+                                ` : `
+                                    <img src="${item.file_path}" alt="Page Media" class="w-full max-h-[420px] object-cover rounded-2xs">
+                                `}
+                            </div>
+                            ${item.caption ? `
+                                <div class="font-serif-diary italic text-stone-700 text-sm sm:text-base text-center mt-4 px-2 leading-relaxed whitespace-pre-line">
+                                    ${item.caption}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                } else {
+                    bodyHtml = `
+                        <div class="flex flex-col items-center justify-center my-auto w-full">
+                            <div class="w-full h-80 bg-stone-200/60 rounded-sm border border-dashed border-stone-300 flex flex-col items-center justify-center text-stone-400">
+                                <svg class="w-10 h-10 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                <span class="font-serif-diary italic text-stone-500">Full Media Placeholder</span>
+                            </div>
+                        </div>
+                    `;
+                }
+            } else if (page.layout_type === 'photo_album_4') {
+                let slotsHtml = '';
+                for (let pos = 1; pos <= 4; pos++) {
+                    const item = page.items ? page.items.find(i => i.position === pos) : null;
+                    if (item && item.file_path) {
+                        const isVideo = item.media_type === 'video' || item.file_path.endsWith('.mp4');
+                        slotsHtml += `
+                            <div class="flex flex-col justify-start">
+                                <div class="bg-[#F4EFE6] p-1 rounded-sm border border-[#ECE5D8] shadow-2xs">
+                                    ${isVideo ? `
+                                        <video controls class="w-full h-32 sm:h-40 object-cover rounded-2xs bg-black">
+                                            <source src="${item.file_path}">
+                                        </video>
+                                    ` : `
+                                        <img src="${item.file_path}" alt="Photo ${pos}" class="w-full h-32 sm:h-40 object-cover rounded-2xs">
+                                    `}
+                                </div>
+                                ${item.caption ? `
+                                    <div class="font-serif-diary italic text-stone-700 text-xs sm:text-sm mt-1.5 px-0.5 leading-snug whitespace-pre-line">
+                                        ${item.caption}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `;
+                    } else {
+                        slotsHtml += `
+                            <div class="bg-[#F4EFE6]/70 border border-dashed border-[#E5DAC6] rounded-sm h-32 sm:h-40 flex items-center justify-center text-stone-400">
+                                <span class="font-serif-diary italic text-xs text-stone-400">note ${pos}</span>
+                            </div>
+                        `;
+                    }
+                }
+                bodyHtml = `<div class="grid grid-cols-2 gap-3.5 my-auto w-full">${slotsHtml}</div>`;
+            }
+
+            return `
+                <div class="w-full flex flex-col justify-start h-full">
+                    ${audioBarHtml}
+                    ${bodyHtml}
+                </div>
+            `;
+        }
+
+        // Render Spread
+        function renderSpread(spread) {
+            const leftNum = (spread * 2) - 1;
+            const rightNum = spread * 2;
+
+            document.getElementById('left-page-header-num').innerText = `HLM ${leftNum}`;
+            document.getElementById('left-page-footer-num').innerText = leftNum;
+            document.getElementById('right-page-header-num').innerText = `HLM ${rightNum}`;
+            document.getElementById('right-page-footer-num').innerText = rightNum;
+
+            // Nav links
+            const prevContainer = document.getElementById('left-prev-btn');
+            if (spread > 1) {
+                prevContainer.innerHTML = `<button type="button" onclick="changeSpread(-1)" class="hover:text-stone-700 transition-colors uppercase tracking-widest">PREVIOUS</button>`;
+            } else {
+                prevContainer.innerHTML = `&nbsp;`;
+            }
+
+            const nextContainer = document.getElementById('right-next-btn');
+            if (spread < totalSpreads) {
+                nextContainer.innerHTML = `<button type="button" onclick="changeSpread(1)" class="hover:text-stone-700 transition-colors uppercase tracking-widest">NEXT PAGE</button>`;
+            } else {
+                nextContainer.innerHTML = `&nbsp;`;
+            }
+
+            // Indicator
+            document.getElementById('spread-indicator').innerText = `Halaman ${leftNum} - ${rightNum} dari ${normalizedMax}`;
+            spreadSelector.value = spread;
+
+            // Bottom prev/next buttons disabled states
+            document.getElementById('btn-prev-spread').disabled = (spread <= 1);
+            document.getElementById('btn-next-spread').disabled = (spread >= totalSpreads);
+
+            // Stop any playing audio before changing spread
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+            }
+
+            // Render contents
+            document.getElementById('left-page-content').innerHTML = renderPageContent(leftNum);
+            document.getElementById('right-page-content').innerHTML = renderPageContent(rightNum);
+
+            // Update URL without reload
+            const newUrl = new URL(window.location);
+            newUrl.searchParams.set('spread', spread);
+            window.history.replaceState({}, '', newUrl);
+        }
+
+        function changeSpread(delta) {
+            goToSpread(currentSpread + delta);
+        }
+
+        function goToSpread(spread) {
+            currentSpread = parseInt(spread);
+            if (currentSpread < 1) currentSpread = 1;
+            if (currentSpread > totalSpreads) currentSpread = totalSpreads;
+            renderSpread(currentSpread);
+        }
+
+        // Initialize Spread
+        renderSpread(currentSpread);
+    </script>
+</body>
+</html>

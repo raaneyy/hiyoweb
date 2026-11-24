@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-[#F8F5EE]">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Halaman - Digital Diary</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+</head>
+<body class="min-h-full font-sans antialiased text-stone-800 bg-[#F8F5EE] selection:bg-[#EADBCE] flex flex-col justify-between">
+
+    <!-- Top Admin Bar Navigation -->
+    <header class="w-full bg-[#F4EFE6]/80 backdrop-blur-md border-b border-[#E7DEC8] px-6 py-3 sticky top-0 z-50 flex items-center justify-between shadow-xs">
+        <div class="flex items-center gap-3">
+            <a href="diary.html" class="flex items-center gap-2 text-stone-700 hover:text-stone-900 transition-colors">
+                <svg class="w-6 h-6 text-stone-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                </svg>
+                <span class="font-serif-diary font-semibold italic text-xl tracking-wide text-stone-800">MyNote</span>
+            </a>
+        </div>
+
+        <nav class="flex items-center gap-3 text-xs font-medium uppercase tracking-wider text-stone-600">
+            <a href="diary.html" class="px-3 py-1.5 rounded-md hover:bg-[#EADBCE]/50 transition-colors">
+                📖 Buka Diary
+            </a>
+            <button type="button" onclick="openPageModal()" class="px-3.5 py-1.5 rounded-md bg-stone-800 text-stone-100 hover:bg-stone-900 transition-all shadow-xs flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Tambah Halaman
+            </button>
+            <button type="button" onclick="openSettingsModal()" class="px-3 py-1.5 rounded-md border border-[#D9CEB9] bg-white hover:bg-stone-50 transition-colors">
+                ⚙️ Pengaturan
+            </button>
+            <button type="button" onclick="DiaryStore.logout()" class="px-3 py-1.5 text-stone-500 hover:text-rose-700 font-medium transition-colors">
+                Logout
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow py-6 sm:py-8">
+        <div class="max-w-5xl mx-auto px-4">
+
+            <!-- Success Notification -->
+            <div id="toast-success" class="hidden mb-6 bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-lg text-sm flex items-center justify-between shadow-2xs">
+                <span id="toast-success-text">Halaman berhasil disimpan!</span>
+                <button type="button" onclick="document.getElementById('toast-success').classList.add('hidden')" class="text-emerald-700 font-bold">&times;</button>
+            </div>
+
+            <!-- Header & Action -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                <div>
+                    <h1 class="font-serif-diary italic text-2xl sm:text-3xl text-stone-800 font-medium">
+                        Kelola Halaman
+                    </h1>
+                    <p class="text-xs text-stone-500 mt-1">Daftar seluruh halaman digital notebook Anda.</p>
+                </div>
+
+                <button type="button" onclick="openPageModal()" class="px-4 py-2.5 rounded-lg bg-stone-900 text-white font-medium text-xs uppercase tracking-wider hover:bg-black transition-all shadow-sm flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Tambah Halaman Baru
+                </button>
+            </div>
+
+            <!-- Pages List Table / Cards -->
+            <div id="pages-table-container" class="bg-white border border-[#E5DAC6] rounded-xl overflow-hidden shadow-xs">
+                <!-- Populated by JS -->
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-4 text-center text-xs text-stone-400 font-serif-diary italic">
+        Digital Notebook Admin &mdash; Client-Side System
+    </footer>
+
+    <!-- ================= MODAL TAMBAH / EDIT HALAMAN ================= -->
+    <div id="modal-page" class="hidden fixed inset-0 z-50 overflow-y-auto bg-stone-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+        <div class="bg-white border border-[#E5DAC6] rounded-xl max-w-3xl w-full p-6 sm:p-8 shadow-xl max-h-[90vh] overflow-y-auto space-y-6">
+            
+            <div class="flex items-center justify-between pb-3 border-b border-[#ECE2D0]">
+                <h2 id="modal-page-title" class="font-serif-diary italic text-2xl text-stone-800 font-semibold">
+                    Tambah Halaman Baru
+                </h2>
+                <button type="button" onclick="closePageModal()" class="text-stone-400 hover:text-stone-700 text-xl font-bold">&times;</button>
+            </div>
+
+            <form id="form-page" onsubmit="savePageForm(event)" class="space-y-5">
+                <input type="hidden" id="edit-original-page-num" value="">
+
+                <!-- Nomor Halaman -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="page_number" class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1">
+                            Nomor Halaman <span class="text-rose-500">*</span>
+                        </label>
+                        <input type="number" id="page_number" min="1" required 
+                               class="w-full bg-[#FAF7F2] border border-[#E0D5C1] rounded-md px-3.5 py-2 text-sm text-stone-800 font-medium focus:outline-none focus:ring-1 focus:ring-stone-400">
+                    </div>
+
+                    <!-- Layout Dropdown -->
+                    <div>
+                        <label for="layout_type" class="block text-xs font-semibold uppercase tracking-wider text-stone-600 mb-1">
+                            Pilihan Layout <span class="text-rose-500">*</span>
+                        </label>
+                        <select id="layout_type" onchange="toggleLayoutFields(this.value)" required
+                                class="w-full bg-[#F4EFE6] border border-[#D9CEB9] font-medium rounded-md px-3.5 py-2 text-sm text-stone-900 focus:outline-none focus:ring-1 focus:ring-stone-500">
+                            <option value="text_only">📝 Text</option>
+                            <option value="full_media">🖼️ 1 Video / Photo</option>
+                            <option value="photo_album_4">📸 Photo Album 4</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Audio Track Section -->
+                <div class="bg-[#FAF7F2] border border-[#ECE2D0] rounded-lg p-4 space-y-3">
+                    <h3 class="font-serif-diary italic text-base text-stone-800 font-semibold flex items-center gap-1.5">
+                        <span class="text-rose-800">♪</span> Background Audio Track (Opsional)
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label for="song_title" class="block text-xs font-semibold text-stone-600 mb-1">Judul Lagu / Track</label>
+                            <input type="text" id="song_title" placeholder="Contoh: Track 02: you! — LANY"
+                                   class="w-full bg-white border border-[#E0D5C1] rounded-md px-3 py-1.5 text-xs text-stone-800 focus:outline-none focus:ring-1 focus:ring-stone-400">
+                        </div>
+                        <div>
+                            <label for="audio_file" class="block text-xs font-semibold text-stone-600 mb-1">Upload File Audio (.mp3, .wav)</label>
+                            <input type="file" id="audio_file" accept="audio/*"
+                                   class="w-full text-xs text-stone-600 file:mr-2 file:py-1 file:px-2.5 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-stone-800 file:text-white cursor-pointer">
+                            <input type="hidden" id="audio_file_existing" value="">
+                            <span id="audio_file_preview" class="text-[11px] text-emerald-700 mt-1 block"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DYNAMIC FIELD 1: TEXT ONLY -->
+                <div id="field-text-only" class="space-y-4 bg-[#FFFDF9] border border-[#E8DFC8] p-4 rounded-lg">
+                    <div>
+                        <label for="note_title" class="block text-xs font-semibold text-stone-700 mb-1">Judul Notes / Catatan</label>
+                        <input type="text" id="note_title" placeholder="Contoh: TOMORROW N FOREVER"
+                               class="w-full bg-[#FAF7F2] border border-[#E0D5C1] rounded-md px-3.5 py-2 text-sm font-serif-diary uppercase tracking-widest text-stone-800 focus:outline-none focus:ring-1 focus:ring-stone-400">
+                    </div>
+                    <div>
+                        <label for="note_content" class="block text-xs font-semibold text-stone-700 mb-1">Isi Teks Catatan / Lirik Lagu</label>
+                        <textarea id="note_content" rows="6" placeholder="Tuliskan catatan harian Anda di sini..."
+                                  class="w-full bg-[#FAF7F2] border border-[#E0D5C1] rounded-md p-3 text-sm font-serif-diary italic text-stone-800 leading-relaxed focus:outline-none focus:ring-1 focus:ring-stone-400 whitespace-pre-line"></textarea>
+                    </div>
+                </div>
+
+                <!-- DYNAMIC FIELD 2: FULL MEDIA -->
+                <div id="field-full-media" class="hidden space-y-4 bg-[#FFFDF9] border border-[#E8DFC8] p-4 rounded-lg">
+                    <div>
+                        <label for="full_media_file" class="block text-xs font-semibold text-stone-700 mb-1">Upload Foto / Video</label>
+                        <input type="file" id="full_media_file" accept="image/*,video/*"
+                               class="w-full text-xs text-stone-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-stone-800 file:text-white hover:file:bg-stone-900 cursor-pointer">
+                        <input type="hidden" id="full_media_existing" value="">
+                        <div id="full_media_preview_box" class="mt-2 hidden">
+                            <span class="text-[11px] text-stone-500 block mb-1">Pratinjau Media:</span>
+                            <img id="full_media_preview_img" src="" alt="Preview" class="w-32 h-32 object-cover rounded border">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="full_media_caption" class="block text-xs font-semibold text-stone-700 mb-1">Caption Media</label>
+                        <textarea id="full_media_caption" rows="2" placeholder="Tuliskan kata-kata / caption di bawah media..."
+                                  class="w-full bg-[#FAF7F2] border border-[#E0D5C1] rounded-md p-2.5 text-xs font-serif-diary italic text-stone-800 focus:outline-none focus:ring-1 focus:ring-stone-400"></textarea>
+                    </div>
+                </div>
+
+                <!-- DYNAMIC FIELD 3: PHOTO ALBUM 4 -->
+                <div id="field-photo-album" class="hidden space-y-4 bg-[#FFFDF9] border border-[#E8DFC8] p-4 rounded-lg">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-stone-600 block mb-2">Grid 4 Foto & Caption</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <!-- Pos 1 -->
+                        <div class="bg-[#FAF7F2] border border-[#EAE1D0] rounded-md p-3 space-y-2">
+                            <span class="text-[11px] font-semibold uppercase tracking-wider text-stone-500 block">Posisi 1</span>
+                            <input type="file" id="album_file_1" accept="image/*,video/*" class="w-full text-xs text-stone-600 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[10px] file:bg-stone-700 file:text-white cursor-pointer">
+                            <input type="hidden" id="album_existing_1" value="">
+                            <img id="album_preview_1" src="" class="hidden w-12 h-12 object-cover rounded border">
+                            <input type="text" id="album_caption_1" placeholder="Caption Foto 1" class="w-full bg-white border border-[#E0D5C1] rounded px-2 py-1 text-xs font-serif-diary italic focus:outline-none">
+                        </div>
+                        <!-- Pos 2 -->
+                        <div class="bg-[#FAF7F2] border border-[#EAE1D0] rounded-md p-3 space-y-2">
+                            <span class="text-[11px] font-semibold uppercase tracking-wider text-stone-500 block">Posisi 2</span>
+                            <input type="file" id="album_file_2" accept="image/*,video/*" class="w-full text-xs text-stone-600 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[10px] file:bg-stone-700 file:text-white cursor-pointer">
+                            <input type="hidden" id="album_existing_2" value="">
+                            <img id="album_preview_2" src="" class="hidden w-12 h-12 object-cover rounded border">
+                            <input type="text" id="album_caption_2" placeholder="Caption Foto 2" class="w-full bg-white border border-[#E0D5C1] rounded px-2 py-1 text-xs font-serif-diary italic focus:outline-none">
+                        </div>
+                        <!-- Pos 3 -->
+                        <div class="bg-[#FAF7F2] border border-[#EAE1D0] rounded-md p-3 space-y-2">
+                            <span class="text-[11px] font-semibold uppercase tracking-wider text-stone-500 block">Posisi 3</span>
+                            <input type="file" id="album_file_3" accept="image/*,video/*" class="w-full text-xs text-stone-600 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[10px] file:bg-stone-700 file:text-white cursor-pointer">
+                            <input type="hidden" id="album_existing_3" value="">
+                            <img id="album_preview_3" src="" class="hidden w-12 h-12 object-cover rounded border">
+                            <input type="text" id="album_caption_3" placeholder="Caption Foto 3" class="w-full bg-white border border-[#E0D5C1] rounded px-2 py-1 text-xs font-serif-diary italic focus:outline-none">
+                        </div>
+                        <!-- Pos 4 -->
+                        <div class="bg-[#FAF7F2] border border-[#EAE1D0] rounded-md p-3 space-y-2">
+                            <span class="text-[11px] font-semibold uppercase tracking-wider text-stone-500 block">Posisi 4</span>
+                            <input type="file" id="album_file_4" accept="image/*,video/*" class="w-full text-xs text-stone-600 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[10px] file:bg-stone-700 file:text-white cursor-pointer">
+                            <input type="hidden" id="album_existing_4" value="">
+                            <img id="album_preview_4" src="" class="hidden w-12 h-12 object-cover rounded border">
+                            <input type="text" id="album_caption_4" placeholder="Caption Foto 4" class="w-full bg-white border border-[#E0D5C1] rounded px-2 py-1 text-xs font-serif-diary italic focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="flex items-center justify-end gap-3 pt-3 border-t border-[#F0E6D6]">
+                    <button type="button" onclick="closePageModal()" class="px-4 py-2 text-xs font-medium uppercase tracking-wider text-stone-600 hover:text-stone-900">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-5 py-2.5 rounded-lg bg-stone-900 text-white font-medium text-xs uppercase tracking-wider hover:bg-black transition-all shadow-sm">
+                        Simpan Halaman
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- ================= MODAL PENGATURAN ================= -->
+    <div id="modal-settings" class="hidden fixed inset-0 z-50 overflow-y-auto bg-stone-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+        <div class="bg-white border border-[#E5DAC6] rounded-xl max-w-lg w-full p-6 sm:p-8 shadow-xl space-y-5">
+            <div class="flex items-center justify-between pb-3 border-b border-[#ECE2D0]">
+                <h2 class="font-serif-diary italic text-2xl text-stone-800 font-semibold">
+                    Pengaturan Diary
+                </h2>
+                <button type="button" onclick="closeSettingsModal()" class="text-stone-400 hover:text-stone-700 text-xl font-bold">&times;</button>
+            </div>
+
+            <form id="form-settings" onsubmit="saveSettingsForm(event)" class="space-y-4">
+                <div>
+                    <label for="set-title" class="block text-xs font-semibold text-stone-700 mb-1">Judul Buku / Diary</label>
+                    <input type="text" id="set-title" required class="w-full bg-[#FAF7F2] border border-[#E0D5C1] rounded-md px-3 py-2 text-sm text-stone-800 font-medium focus:outline-none">
+                </div>
+
+                <div class="bg-[#FAF7F2] p-4 rounded-lg border border-[#EAE1D0] space-y-3">
+                    <span class="block text-xs font-semibold uppercase tracking-wider text-stone-700">Tanggal Verifikasi Reader</span>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label for="set-day" class="block text-[10px] text-stone-500 uppercase font-semibold">Hari</label>
+                            <input type="number" id="set-day" min="1" max="31" required class="w-full bg-white border border-[#E0D5C1] rounded px-2 py-1.5 text-center text-sm font-semibold">
+                        </div>
+                        <div>
+                            <label for="set-month" class="block text-[10px] text-stone-500 uppercase font-semibold">Bulan</label>
+                            <input type="number" id="set-month" min="1" max="12" required class="w-full bg-white border border-[#E0D5C1] rounded px-2 py-1.5 text-center text-sm font-semibold">
+                        </div>
+                        <div>
+                            <label for="set-year" class="block text-[10px] text-stone-500 uppercase font-semibold">Tahun</label>
+                            <input type="number" id="set-year" required class="w-full bg-white border border-[#E0D5C1] rounded px-2 py-1.5 text-center text-sm font-semibold">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="set-clue" class="block text-[10px] text-stone-500 uppercase font-semibold mb-1">Teks Petunjuk (Clue)</label>
+                        <input type="text" id="set-clue" required class="w-full bg-white border border-[#E0D5C1] rounded px-3 py-1.5 text-xs font-medium">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="set-password" class="block text-xs font-semibold text-stone-700 mb-1">Password Admin</label>
+                    <input type="password" id="set-password" required class="w-full bg-[#FAF7F2] border border-[#E0D5C1] rounded-md px-3 py-2 text-sm text-stone-800 font-mono focus:outline-none">
+                </div>
+
+                <div class="pt-2 flex items-center justify-between">
+                    <button type="button" onclick="confirmResetDefaults()" class="text-xs text-rose-600 hover:text-rose-800 underline">
+                        Reset ke Data Awal Demo
+                    </button>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="closeSettingsModal()" class="px-3 py-1.5 text-xs uppercase text-stone-600">Batal</button>
+                        <button type="submit" class="px-4 py-2 rounded-lg bg-stone-900 text-white text-xs uppercase font-semibold">Simpan</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/app.js"></script>
+    <script>
+        // Check Authentication - Only Admin Allowed
+        const auth = DiaryStore.getAuth();
+        if (!auth.isAdmin) {
+            window.location.href = 'login.html?tab=admin';
+        }
+
+        // Render Page Table List
+        function renderPagesTable() {
+            const container = document.getElementById('pages-table-container');
+            const pages = DiaryStore.getPages();
+
+            if (pages.length === 0) {
+                container.innerHTML = `
+                    <div class="p-12 text-center">
+                        <svg class="w-12 h-12 text-stone-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                        </svg>
+                        <h3 class="font-serif-diary italic text-xl text-stone-600 mb-2">Belum ada halaman di diary ini</h3>
+                        <p class="text-xs text-stone-400 max-w-sm mx-auto mb-4">Mulai buat halaman pertama Anda dengan memilih layout Text Only, Full Media, atau Photo Album 4.</p>
+                        <button type="button" onclick="openPageModal()" class="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-stone-800 underline hover:text-black">
+                            + Tambah Halaman Sekarang
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            let rowsHtml = '';
+            pages.forEach(p => {
+                let badge = '';
+                if (p.layout_type === 'text_only') {
+                    badge = `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-amber-100 text-amber-800">📝 Text</span>`;
+                } else if (p.layout_type === 'full_media') {
+                    badge = `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-blue-100 text-blue-800">🖼️ 1 Video/Photo</span>`;
+                } else {
+                    badge = `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-emerald-100 text-emerald-800">📸 Photo Album</span>`;
+                }
+
+                let summary = '-';
+                if (p.layout_type === 'text_only') {
+                    summary = `<span class="font-serif-diary italic font-semibold text-stone-800">${p.note_title || 'Catatan'}:</span> <span class="text-stone-500 font-serif-diary italic">${(p.note_content || '').substring(0, 35)}...</span>`;
+                } else if (p.items) {
+                    const count = p.items.filter(i => i.file_path).length;
+                    summary = `<span class="text-stone-500">${count} media item(s)</span>`;
+                }
+
+                const spreadIdx = Math.ceil(p.page_number / 2);
+
+                rowsHtml += `
+                    <tr class="hover:bg-[#FFFDF9] transition-colors">
+                        <td class="py-3.5 px-4 font-mono font-bold text-stone-900">
+                            Halaman ${p.page_number}
+                        </td>
+                        <td class="py-3.5 px-4">${badge}</td>
+                        <td class="py-3.5 px-4">
+                            ${p.song_title ? `
+                                <div class="flex items-center gap-1 text-rose-800 font-medium">
+                                    <span>♪</span> <span class="truncate max-w-[160px]">${p.song_title}</span>
+                                </div>
+                            ` : `<span class="text-stone-300">-</span>`}
+                        </td>
+                        <td class="py-3.5 px-4 max-w-xs truncate">${summary}</td>
+                        <td class="py-3.5 px-4 text-right space-x-2">
+                            <a href="diary.html?spread=${spreadIdx}" class="text-xs font-medium text-stone-600 hover:text-stone-900 underline">Lihat</a>
+                            <button type="button" onclick="editPage(${p.page_number})" class="text-xs font-medium text-amber-700 hover:text-amber-900 underline">Edit</button>
+                            <button type="button" onclick="deletePage(${p.page_number})" class="text-xs font-medium text-rose-600 hover:text-rose-900 underline">Hapus</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            container.innerHTML = `
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-[#FAF7F2] border-b border-[#E5DAC6] text-stone-600 font-semibold uppercase tracking-wider">
+                            <tr>
+                                <th class="py-3.5 px-4">Hlm #</th>
+                                <th class="py-3.5 px-4">Tipe Layout</th>
+                                <th class="py-3.5 px-4">Audio Track</th>
+                                <th class="py-3.5 px-4">Ringkasan Konten</th>
+                                <th class="py-3.5 px-4 text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-[#F0E6D6] text-stone-700">
+                            ${rowsHtml}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // Toggle layout specific fields
+        function toggleLayoutFields(type) {
+            document.getElementById('field-text-only').classList.toggle('hidden', type !== 'text_only');
+            document.getElementById('field-full-media').classList.toggle('hidden', type !== 'full_media');
+            document.getElementById('field-photo-album').classList.toggle('hidden', type !== 'photo_album_4');
+        }
+
+        // Open modal to add a new page
+        function openPageModal(presetPageNum) {
+            document.getElementById('form-page').reset();
+            document.getElementById('edit-original-page-num').value = '';
+            document.getElementById('modal-page-title').innerText = 'Tambah Halaman Baru';
+
+            const pages = DiaryStore.getPages();
+            const nextNum = presetPageNum || (pages.length > 0 ? Math.max(...pages.map(p => p.page_number)) + 1 : 1);
+            document.getElementById('page_number').value = nextNum;
+
+            document.getElementById('audio_file_existing').value = '';
+            document.getElementById('audio_file_preview').innerText = '';
+            document.getElementById('full_media_existing').value = '';
+            document.getElementById('full_media_preview_box').classList.add('hidden');
+
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`album_existing_${i}`).value = '';
+                document.getElementById(`album_preview_${i}`).classList.add('hidden');
+            }
+
+            document.getElementById('layout_type').value = 'text_only';
+            toggleLayoutFields('text_only');
+
+            document.getElementById('modal-page').classList.remove('hidden');
+        }
+
+        // Open modal to edit existing page
+        function editPage(pageNumber) {
+            const page = DiaryStore.getPage(pageNumber);
+            if (!page) return;
+
+            document.getElementById('form-page').reset();
+            document.getElementById('edit-original-page-num').value = page.page_number;
+            document.getElementById('modal-page-title').innerText = `Edit Halaman ${page.page_number}`;
+
+            document.getElementById('page_number').value = page.page_number;
+            document.getElementById('layout_type').value = page.layout_type || 'text_only';
+            document.getElementById('song_title').value = page.song_title || '';
+
+            // Audio existing
+            document.getElementById('audio_file_existing').value = page.audio_file || '';
+            document.getElementById('audio_file_preview').innerText = page.audio_file ? 'Audio tersimpan' : '';
+
+            // Text only
+            document.getElementById('note_title').value = page.note_title || '';
+            document.getElementById('note_content').value = page.note_content || '';
+
+            // Full media
+            if (page.layout_type === 'full_media' && page.items && page.items[0]) {
+                const item = page.items[0];
+                document.getElementById('full_media_existing').value = item.file_path || '';
+                document.getElementById('full_media_caption').value = item.caption || '';
+                if (item.file_path) {
+                    document.getElementById('full_media_preview_box').classList.remove('hidden');
+                    document.getElementById('full_media_preview_img').src = item.file_path;
+                } else {
+                    document.getElementById('full_media_preview_box').classList.add('hidden');
+                }
+            } else {
+                document.getElementById('full_media_existing').value = '';
+                document.getElementById('full_media_preview_box').classList.add('hidden');
+            }
+
+            // Photo Album 4
+            for (let i = 1; i <= 4; i++) {
+                const item = page.items ? page.items.find(x => x.position === i) : null;
+                document.getElementById(`album_existing_${i}`).value = (item && item.file_path) || '';
+                document.getElementById(`album_caption_${i}`).value = (item && item.caption) || '';
+                const img = document.getElementById(`album_preview_${i}`);
+                if (item && item.file_path) {
+                    img.src = item.file_path;
+                    img.classList.remove('hidden');
+                } else {
+                    img.classList.add('hidden');
+                }
+            }
+
+            toggleLayoutFields(page.layout_type || 'text_only');
+            document.getElementById('modal-page').classList.remove('hidden');
+        }
+
+        function closePageModal() {
+            document.getElementById('modal-page').classList.add('hidden');
+        }
+
+        // Handle Save Page Form
+        async function savePageForm(e) {
+            e.preventDefault();
+            const pageNum = parseInt(document.getElementById('page_number').value);
+            const originalNum = document.getElementById('edit-original-page-num').value;
+            const layoutType = document.getElementById('layout_type').value;
+            const songTitle = document.getElementById('song_title').value;
+
+            // Audio file processing
+            let audioFile = document.getElementById('audio_file_existing').value;
+            const audioInput = document.getElementById('audio_file');
+            if (audioInput.files && audioInput.files[0]) {
+                audioFile = await fileToBase64(audioInput.files[0]);
+            }
+
+            const pageData = {
+                page_number: pageNum,
+                layout_type: layoutType,
+                song_title: songTitle,
+                audio_file: audioFile,
+                note_title: '',
+                note_content: '',
+                items: []
+            };
+
+            if (layoutType === 'text_only') {
+                pageData.note_title = document.getElementById('note_title').value;
+                pageData.note_content = document.getElementById('note_content').value;
+            } else if (layoutType === 'full_media') {
+                let fullPath = document.getElementById('full_media_existing').value;
+                const fullInput = document.getElementById('full_media_file');
+                if (fullInput.files && fullInput.files[0]) {
+                    fullPath = await fileToBase64(fullInput.files[0]);
+                }
+                pageData.items.push({
+                    position: 1,
+                    media_type: 'image',
+                    file_path: fullPath,
+                    caption: document.getElementById('full_media_caption').value
+                });
+            } else if (layoutType === 'photo_album_4') {
+                for (let i = 1; i <= 4; i++) {
+                    let path = document.getElementById(`album_existing_${i}`).value;
+                    const fileInput = document.getElementById(`album_file_${i}`);
+                    if (fileInput.files && fileInput.files[0]) {
+                        path = await fileToBase64(fileInput.files[0]);
+                    }
+                    pageData.items.push({
+                        position: i,
+                        media_type: 'image',
+                        file_path: path,
+                        caption: document.getElementById(`album_caption_${i}`).value
+                    });
+                }
+            }
+
+            // If page number was changed during edit, delete old page number first
+            if (originalNum && parseInt(originalNum) !== pageNum) {
+                DiaryStore.deletePage(originalNum);
+            }
+
+            DiaryStore.savePage(pageData);
+            closePageModal();
+            renderPagesTable();
+
+            // Show Toast
+            const toast = document.getElementById('toast-success');
+            document.getElementById('toast-success-text').innerText = `Halaman ${pageNum} berhasil disimpan!`;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 4000);
+        }
+
+        // Delete Page
+        function deletePage(pageNumber) {
+            if (confirm(`Apakah Anda yakin ingin menghapus Halaman ${pageNumber}?`)) {
+                DiaryStore.deletePage(pageNumber);
+                renderPagesTable();
+            }
+        }
+
+        // Settings Modal
+        function openSettingsModal() {
+            const s = DiaryStore.getSettings();
+            document.getElementById('set-title').value = s.diary_title || 'A Piece of Us';
+            document.getElementById('set-day').value = s.reader_day || 18;
+            document.getElementById('set-month').value = s.reader_month || 3;
+            document.getElementById('set-year').value = s.reader_year || 2026;
+            document.getElementById('set-clue').value = s.reader_clue || 'AWAL MARET';
+            document.getElementById('set-password').value = s.admin_password || 'admin123';
+            document.getElementById('modal-settings').classList.remove('hidden');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('modal-settings').classList.add('hidden');
+        }
+
+        function saveSettingsForm(e) {
+            e.preventDefault();
+            DiaryStore.saveSettings({
+                diary_title: document.getElementById('set-title').value,
+                reader_day: parseInt(document.getElementById('set-day').value),
+                reader_month: parseInt(document.getElementById('set-month').value),
+                reader_year: parseInt(document.getElementById('set-year').value),
+                reader_clue: document.getElementById('set-clue').value,
+                admin_password: document.getElementById('set-password').value
+            });
+            closeSettingsModal();
+            alert('Pengaturan berhasil diperbarui!');
+        }
+
+        function confirmResetDefaults() {
+            if (confirm('Apakah Anda yakin ingin mengembalikan seluruh halaman ke data awal demo? Semua perubahan halaman akan direset.')) {
+                DiaryStore.resetToDefault();
+                closeSettingsModal();
+                renderPagesTable();
+                alert('Data berhasil direset ke demo awal.');
+            }
+        }
+
+        // Auto check action from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('action') === 'create') {
+            const prePage = urlParams.get('page_number');
+            openPageModal(prePage ? parseInt(prePage) : null);
+        }
+
+        // Initial Render
+        renderPagesTable();
+    </script>
+</body>
+</html>
